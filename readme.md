@@ -65,6 +65,21 @@ Toolchain=.NET 7.0
 | Serilog_Point                   | 4,063.3 ns | 180.59 ns | 523.93 ns | 4,030.7 ns | 0.0229 |      - |    2160 B |
 | Serilog_Point_Async             | 1,345.7 ns |  26.61 ns |  69.63 ns | 1,357.8 ns | 0.0191 | 0.0191 |    1727 B |
 
+| Method                          | Description                                                                   |
+|---------------------------------|-------------------------------------------------------------------------------|
+| Default                         | LogInformation call on Microsoft ILogger                                      |
+| Default_CodeGen_Info            | Codegen Info call on  Microsoft ILogger                                       |
+| Default_CodeGen_Point           | Codegen call passing Point object on  Microsoft ILogger                       |
+| Default_CodeGen_Something       | Codegen call passing an int on  Microsoft ILogger                             |
+| Serilog                         | Information call on Serilog logger                                            |
+| Serilog_Async                   | Information call on Serilog logger using async console sink                   |
+| Serilog_CodeGen_Info            | Codegen Info call on Serilog logger                                           |
+| Serilog_CodeGen_Info_Async      | Codegen Info call on Serilog logger using async console sink                  |
+| Serilog_CodeGen_Something       | Codegen Info call on Serilog logger passing an int                            |
+| Serilog_CodeGen_Something_Async | Codegen Info call on Serilog logger passing an int using async                |
+| Serilog_Point                   | Information call on Serilog logger passing Point and auto destruct            |
+| Serilog_Point_Async             | Information call on Serilog logger passing Point and auto destruct with async |
+
 ### Warnings
 
 ```
