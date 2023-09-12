@@ -53,15 +53,15 @@ Toolchain=.NET 7.0
 | Method                          |       Mean |     Error |    StdDev |     Median |   Gen0 |   Gen1 | Allocated |
 |---------------------------------|-----------:|----------:|----------:|-----------:|-------:|-------:|----------:|
 | Default                         | 8,348.1 ns | 188.06 ns | 548.58 ns | 8,506.3 ns |      - |      - |     208 B |
-| Serilog_CodeGen_Point           | 8,459.4 ns |  69.09 ns |  53.94 ns | 8,465.6 ns |      - |      - |     384 B |
+| Default_CodeGen_Info            | 7,964.3 ns | 232.66 ns | 686.01 ns | 7,949.6 ns |      - |      - |     312 B |
+| Default_CodeGen_Point           | 8,459.4 ns |  69.09 ns |  53.94 ns | 8,465.6 ns |      - |      - |     384 B |
+| Default_CodeGen_Something       | 7,833.9 ns | 246.42 ns | 718.83 ns | 7,923.0 ns |      - |      - |     352 B |
 | Serilog                         | 4,130.8 ns | 115.36 ns | 340.14 ns | 4,268.5 ns | 0.0076 |      - |    1048 B |
 | Serilog_Async                   |   158.3 ns |   4.16 ns |  12.21 ns |   161.0 ns | 0.0024 |      - |     201 B |
-| Default_CodeGen_Something       | 7,833.9 ns | 246.42 ns | 718.83 ns | 7,923.0 ns |      - |      - |     352 B |
-| Serilog_CodeGen_Something       | 3,525.1 ns | 157.46 ns | 464.28 ns | 3,392.1 ns | 0.0229 |      - |    2072 B |
-| Serilog_CodeGen_Something_Async |   751.9 ns |   3.08 ns |   2.57 ns |   752.5 ns | 0.0153 | 0.0134 |    1308 B |
-| Default_CodeGen_Info            | 7,964.3 ns | 232.66 ns | 686.01 ns | 7,949.6 ns |      - |      - |     312 B |
 | Serilog_CodeGen_Info            | 3,798.8 ns | 166.70 ns | 488.89 ns | 3,857.7 ns | 0.0153 |      - |    1680 B |
 | Serilog_CodeGen_Info_Async      |   558.8 ns |   6.22 ns |   5.20 ns |   558.0 ns | 0.0105 | 0.0086 |     922 B |
+| Serilog_CodeGen_Something       | 3,525.1 ns | 157.46 ns | 464.28 ns | 3,392.1 ns | 0.0229 |      - |    2072 B |
+| Serilog_CodeGen_Something_Async |   751.9 ns |   3.08 ns |   2.57 ns |   752.5 ns | 0.0153 | 0.0134 |    1308 B |
 | Serilog_Point                   | 4,063.3 ns | 180.59 ns | 523.93 ns | 4,030.7 ns | 0.0229 |      - |    2160 B |
 | Serilog_Point_Async             | 1,345.7 ns |  26.61 ns |  69.63 ns | 1,357.8 ns | 0.0191 | 0.0191 |    1727 B |
 

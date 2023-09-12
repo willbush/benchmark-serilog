@@ -97,7 +97,13 @@ public class ConsoleBenchmarks
     public void Default() => Logger.LogInformation(Program.Message);
 
     [Benchmark]
-    public void Serilog_CodeGen_Point() => Logger.LogPoint(Program.Message, Program.Point);
+    public void Default_CodeGen_Info() => Logger.Info(Program.Message);
+
+    [Benchmark]
+    public void Default_CodeGen_Point() => Logger.LogPoint(Program.Message, Program.Point);
+
+    [Benchmark]
+    public void Default_CodeGen_Something() => Logger.LogSomething(Program.Message, 42);
 
     [Benchmark]
     public void Serilog() => SeriLogger.Information(Program.Message);
@@ -106,22 +112,16 @@ public class ConsoleBenchmarks
     public void Serilog_Async() => SeriLoggerAsync.Information(Program.Message);
 
     [Benchmark]
-    public void Default_CodeGen_Something() => Logger.LogSomething(Program.Message, 42);
+    public void Serilog_CodeGen_Info() => SeriDefaultLogger.Info(Program.Message);
+
+    [Benchmark]
+    public void Serilog_CodeGen_Info_Async() => SeriDefaultLoggerAsync.Info(Program.Message);
 
     [Benchmark]
     public void Serilog_CodeGen_Something() => SeriDefaultLogger.LogSomething(Program.Message, 42);
 
     [Benchmark]
     public void Serilog_CodeGen_Something_Async() => SeriDefaultLoggerAsync.LogSomething(Program.Message, 42);
-
-    [Benchmark]
-    public void Default_CodeGen_Info() => Logger.Info(Program.Message);
-
-    [Benchmark]
-    public void Serilog_CodeGen_Info() => SeriDefaultLogger.Info(Program.Message);
-
-    [Benchmark]
-    public void Serilog_CodeGen_Info_Async() => SeriDefaultLoggerAsync.Info(Program.Message);
 
     [Benchmark]
     public void Serilog_Point() => SeriLogger.Information("{Message} {@Point}", Program.Message, Program.Point);
