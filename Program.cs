@@ -79,7 +79,9 @@ public class ConsoleBenchmarks
 
     // SeriLog. Console logging with Compile-time logging source generation.
     static readonly ILogger<ConsoleBenchmarks> SeriDefaultLogger =
-        new SerilogLoggerFactory().CreateLogger<ConsoleBenchmarks>();
+        new SerilogLoggerFactory(
+            new LoggerConfiguration().WriteTo.Console().CreateLogger())
+            .CreateLogger<ConsoleBenchmarks>();
 
     // SeriLog Logger with async console sink.
     static readonly Logger SeriLoggerAsync =
