@@ -4,7 +4,7 @@ This repository contains performance benchmarks comparing Serilog logging
 library to the default [.NET
 logging](https://learn.microsoft.com/en-us/dotnet/core/extensions/logging?tabs=command-line).
 
-Specify I was interested in if Serilog added performance overhead when using
+Specifically, I was interested in if Serilog added performance overhead when using
 `Microsoft.Extensions.Logging.ILogger` in order to leverage:
 
 - https://learn.microsoft.com/en-us/dotnet/core/extensions/logger-message-generator
