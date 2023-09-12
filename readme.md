@@ -1,5 +1,19 @@
 # benchmark-serilog
 
+## Run benchmarks
+
+```sh
+dotnet run -c Release
+```
+
+typy `*` and hit enter.
+
+In NixOS, I had to specify the path to the dotnet executable for BenchmarkDotNet:
+
+```sh
+dotnet run -c Release -- --cli /etc/profiles/per-user/will/bin/dotnet
+```
+
 ## Console Benchmarks Summary
 
 ```
