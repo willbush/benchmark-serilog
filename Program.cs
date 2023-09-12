@@ -48,22 +48,22 @@ public class NoSinkBenchmarks
     public void Default() => Logger.LogInformation(Program.Message);
 
     [Benchmark]
-    public void Serilog() => SeriLogger.Information(Program.Message);
+    public void Default_CodeGen_Info() => Logger.Info(Program.Message);
 
     [Benchmark]
     public void Default_CodeGen_Something() => Logger.LogSomething(Program.Message, 42);
 
     [Benchmark]
-    public void Serilog_CodeGen_Something() => SeriDefaultLogger.LogSomething(Program.Message, 42);
-
-    [Benchmark]
-    public void Default_CodeGen_Info() => Logger.Info(Program.Message);
+    public void Serilog() => SeriLogger.Information(Program.Message);
 
     [Benchmark]
     public void Serilog_CodeGen_Info() => SeriDefaultLogger.Info(Program.Message);
 
     [Benchmark]
     public void Serilog_CodeGen_Point() => SeriDefaultLogger.LogPoint(Program.Message, Program.Point);
+
+    [Benchmark]
+    public void Serilog_CodeGen_Something() => SeriDefaultLogger.LogSomething(Program.Message, 42);
 }
 
 [MemoryDiagnoser]

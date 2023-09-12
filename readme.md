@@ -119,12 +119,12 @@ Toolchain=.NET 7.0
 | Method                    |       Mean |     Error |    StdDev |   Gen0 | Allocated |
 |---------------------------|-----------:|----------:|----------:|-------:|----------:|
 | Default                   |  11.229 ns | 0.0009 ns | 0.0008 ns |      - |         - |
-| Serilog                   | 103.643 ns | 0.0574 ns | 0.0537 ns | 0.0017 |     144 B |
-| Default_CodeGen_Something |   1.714 ns | 0.0005 ns | 0.0005 ns |      - |         - |
-| Serilog_CodeGen_Something |   2.754 ns | 0.0438 ns | 0.0409 ns |      - |         - |
 | Default_CodeGen_Info      |   1.704 ns | 0.0001 ns | 0.0001 ns |      - |         - |
+| Default_CodeGen_Something |   1.714 ns | 0.0005 ns | 0.0005 ns |      - |         - |
+| Serilog                   | 103.643 ns | 0.0574 ns | 0.0537 ns | 0.0017 |     144 B |
 | Serilog_CodeGen_Info      |   2.488 ns | 0.0098 ns | 0.0092 ns |      - |         - |
 | Serilog_CodeGen_Point     |   2.399 ns | 0.0014 ns | 0.0012 ns |      - |         - |
+| Serilog_CodeGen_Something |   2.754 ns | 0.0438 ns | 0.0409 ns |      - |         - |
 
 ### Hints
 
