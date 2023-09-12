@@ -6,7 +6,7 @@
 dotnet run -c Release
 ```
 
-typy `*` and hit enter.
+type `*` and hit enter.
 
 In NixOS, I had to specify the path to the dotnet executable for BenchmarkDotNet:
 
