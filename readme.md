@@ -1,5 +1,28 @@
 # benchmark-serilog
 
+This repository contains performance benchmarks comparing Serilog logging
+library to the default [.NET
+logging](https://learn.microsoft.com/en-us/dotnet/core/extensions/logging?tabs=command-line).
+
+Specify I was interested in if Serilog added performance overhead when using
+`Microsoft.Extensions.Logging.ILogger` in order to leverage:
+
+- https://learn.microsoft.com/en-us/dotnet/core/extensions/logger-message-generator
+- https://learn.microsoft.com/en-us/dotnet/core/extensions/high-performance-logging
+
+## Overview
+
+Benchmarks are broken down into two categories:
+
+1. **NoSinkBenchmarks**: Benchmarks that do not write log events to any sink.
+2. **ConsoleBenchmarks**: Benchmarks that write log events to the console.
+
+Each category tests different forms of logging, including:
+
+- Default `ILogger` (Microsoft.Extensions.Logging.ILogger)
+- Default Serilog `Logger`
+- Serilog `Logger` via default `ILogger` using compile-time logging source generation
+
 ## Run benchmarks
 
 ```sh
