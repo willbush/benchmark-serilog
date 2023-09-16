@@ -20,7 +20,7 @@ Benchmarks different forms of logging, including:
 
 ## Run benchmarks
 
-Some benchmarks run using Open Teleetry against a local Signoz server. To set it up run:
+Some benchmarks run using Open Telemetry against a local Signoz server. To set it up run:
 
 ```sh
 git clone https://github.com/SigNoz/signoz.git
