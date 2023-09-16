@@ -110,21 +110,11 @@ public class SerilogAsyncConsoleInfo
 [SuppressMessage("Performance", "CA1822:Mark members as static")] // benchmarks must be non-static
 public class SerilogAsyncConsolePoint
 {
-	// SeriLog Logger with async console sink.
-	static readonly Logger SeriLoggerAsync =
-		new LoggerConfiguration().WriteTo.Async(x => x.Console()).CreateLogger();
-
-	// SeriLog Logger with async console sink.
-	static readonly ILogger<SerilogAsyncConsoleInfo> SeriDefaultLoggerAsync =
-		new SerilogLoggerFactory(
-			new LoggerConfiguration().WriteTo.Async(x => x.Console()).CreateLogger())
-			.CreateLogger<SerilogAsyncConsoleInfo>();
+	[Benchmark]
+	public void CodeGenPoint() => Logging.SeriDefaultLoggerAsync.LogPoint("Processed", Program.Point);
 
 	[Benchmark]
-	public void CodeGenPoint() => SeriDefaultLoggerAsync.LogPoint("Processed", Program.Point);
-
-	[Benchmark]
-	public void Point() => SeriLoggerAsync.Information("Processed {@Point}", Program.Point);
+	public void Point() => Logging.SeriLoggerAsync.Information("Processed {@Point}", Program.Point);
 }
 
 /// <summary>
