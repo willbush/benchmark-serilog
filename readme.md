@@ -33,7 +33,7 @@ Personally, I get this error:
 Error response from daemon: unknown log opt 'max-file' for journald log driver
 ```
 
-To fix it I grep for `max-file` in `signoz/deploy` all yaml blocks like:
+To fix it, I grep for `max-file` in `signoz/deploy` all yaml blocks like, and delete them:
 
 ```yaml
 logging:
