@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry.Logs;
 using Serilog;
 using Serilog.Core;
 using Serilog.Extensions.Logging;
@@ -30,7 +31,7 @@ public static partial class Logging
 			.CreateLogger<SerilogAsyncConsoleInfo>();
 
 	// SeriLog. Open Telemetry logging.
-	public static readonly Logger SeriOtelLogger = new LoggerConfiguration()
+	public static readonly Logger SeriSigNozLogger = new LoggerConfiguration()
 		.WriteTo.OpenTelemetry(options =>
 		{
 			options.Endpoint = "http://127.0.0.1:4317";
@@ -116,21 +117,6 @@ public class SerilogAsyncConsoleInfo
 }
 
 /// <summary>
-/// Comparing Serilog async console sink vs Serilog async Open Telemetry to local signoz.io
-/// </summary>
-[HideColumns("Error", "StdDev", "Median")]
-[MemoryDiagnoser(displayGenColumns: false)]
-[SuppressMessage("Performance", "CA1822:Mark members as static")] // benchmarks must be non-static
-public class SerilogAsyncConsoleVsOtelInfo
-{
-	[Benchmark]
-	public void AsyncOtelInfo() => Logging.SeriOtelLogger.Information(Program.Message);
-
-	[Benchmark]
-	public void AsyncInfo() => Logging.SeriLoggerAsync.Information(Program.Message);
-}
-
-/// <summary>
 /// Comparing getting a Point containing X / Y ints into the body of the message and into the
 /// structured log.
 /// </summary>
@@ -159,4 +145,51 @@ public class SerilogAsyncConsoleInts
 
 	[Benchmark]
 	public void Ints() => Logging.SeriLoggerAsync.Information("Processed {@0} {@1} {@2}", 10, 20, 30);
+}
+
+/// <summary>
+/// Comparing Serilog async console sink to local SigNoz vs Serilog async to local SigNoz
+/// </summary>
+[HideColumns("Error", "StdDev", "Median")]
+[MemoryDiagnoser(displayGenColumns: false)]
+[SuppressMessage("Performance", "CA1822:Mark members as static")] // benchmarks must be non-static
+public class SerilogAsyncConsoleVsSerilogToSigNoz
+{
+	[Benchmark]
+	public void AsyncSigNozInfo() => Logging.SeriSigNozLogger.Information(Program.Message);
+
+	[Benchmark]
+	public void AsyncInfo() => Logging.SeriLoggerAsync.Information(Program.Message);
+}
+
+/// <summary>
+/// Comparing Microsoft default logger to local SigNoz vs Serilog async to local SigNoz
+/// </summary>
+[HideColumns("Error", "StdDev", "Median")]
+[MemoryDiagnoser(displayGenColumns: false)]
+[SuppressMessage("Performance", "CA1822:Mark members as static")] // benchmarks must be non-static
+public class MicrosoftLoggerVsSerilogToSigNoz
+{
+	static readonly ILogger Logger = LoggerFactory.Create(builder =>
+	{
+		builder.AddOpenTelemetry(options =>
+		{
+			options.IncludeScopes = false;
+			options.ParseStateValues = true;
+			options.IncludeFormattedMessage = true;
+			options.AddOtlpExporter(otlpOptions =>
+			{
+				otlpOptions.Endpoint = new Uri("http://localhost:4317");
+			});
+		});
+	}).CreateLogger<MicrosoftLoggerVsSerilogToSigNoz>();
+	
+	[Benchmark]
+	public void DefaultLogInformation() => Logger.LogInformation(Program.Message);
+
+	[Benchmark]
+	public void CodeGenDefaultInfo() => Logger.Info(Program.Message);
+
+	[Benchmark]
+	public void AsyncInformation() => Logging.SeriSigNozLogger.Information(Program.Message);
 }
