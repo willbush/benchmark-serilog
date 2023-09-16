@@ -73,11 +73,11 @@ AMD Ryzen 9 7950X, 1 CPU, 32 logical and 16 physical cores
 Toolchain=.NET 8.0
 ```
 
-*Legends*
+### Legends for charts below
 
-- Mean      : Arithmetic mean of all measurements
-- Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
-- 1 ns      : 1 Nanosecond (0.000000001 sec)
+- *Mean*      : Arithmetic mean of all measurements
+- *Allocated* : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+- *1 ns*      : 1 Nanosecond (0.000000001 sec)
 
 ### Logger vs Serilog vs Serilog async console
 
