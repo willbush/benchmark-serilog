@@ -49,7 +49,7 @@ public static partial class Logging
 	public static partial void Info(this ILogger logger, string message);
 
 	[LoggerMessage(
-		EventId = 2,
+		EventId = 1,
 		Level = LogLevel.Information,
 		Message = "{message} {point}")]
 	public static partial void LogPoint(this ILogger logger, string message, Point point);
