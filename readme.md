@@ -95,10 +95,11 @@ Benchmarks from now on will only compare using async.
 
 ### `Info` vs `Information`
 
-Comparing source generated `Info` vs `Information` method on Serilog's interface.
+Comparing source generated `Info` using Serilog via ILogger vs `Information`
+method on Serilog's interface.
 
-| Method      | Mean     | Allocated |
-|------------ |---------:|----------:|
+| Method      |     Mean | Allocated |
+|-------------|---------:|----------:|
 | CodeGenInfo | 394.9 ns |     916 B |
 | Info        | 128.7 ns |     193 B |
 
@@ -106,8 +107,8 @@ Comparing source generated `Info` vs `Information` method on Serilog's interface
 
 Comparing getting 3 ints into the body of the message and into the structured log.
 
-| Method      | Mean     | Allocated |
-|------------ |---------:|----------:|
+| Method      |     Mean | Allocated |
+|-------------|---------:|----------:|
 | CodeGenInts | 762.5 ns |    1607 B |
 | Ints        | 282.1 ns |     647 B |
 
@@ -116,8 +117,8 @@ Comparing getting 3 ints into the body of the message and into the structured lo
 Comparing getting a Point containing X / Y ints into the body of the message and
 into the structured log.
 
-| Method       | Mean     | Allocated |
-|------------- |---------:|----------:|
+| Method       |     Mean | Allocated |
+|--------------|---------:|----------:|
 | CodeGenPoint | 636.6 ns |   1.29 KB |
 | Point        | 647.4 ns |   1.26 KB |
 
@@ -126,7 +127,7 @@ into the structured log.
 Comparing Serilog async console sink vs Serilog async Open Telemetry to local
 signoz.io
 
-| Method        | Mean     | Allocated |
-|-------------- |---------:|----------:|
+| Method        |     Mean | Allocated |
+|---------------|---------:|----------:|
 | AsyncOtelInfo | 132.3 ns |     240 B |
 | AsyncInfo     | 136.2 ns |     201 B |
