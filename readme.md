@@ -48,8 +48,6 @@ Then run:
 dotnet run -c Release -- --filter "*"
 ```
 
-type `*` and hit enter.
-
 In NixOS, I had to specify the path to the dotnet executable for BenchmarkDotNet:
 
 ```sh
