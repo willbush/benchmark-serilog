@@ -10,15 +10,10 @@ Specifically, I was interested in if Serilog added performance overhead when usi
 - https://learn.microsoft.com/en-us/dotnet/core/extensions/logger-message-generator
 - https://learn.microsoft.com/en-us/dotnet/core/extensions/high-performance-logging
 
-## Overview
+Or should I just use Serilog's `Logger` directly?
 
-Benchmarks different forms of logging, including:
 
-- Default `ILogger` (Microsoft.Extensions.Logging.ILogger)
-- Default Serilog `Logger`
-- Serilog `Logger` via default `ILogger` using compile-time logging source generation
-
-## Run benchmarks
+## Optionally Setup SigNoz
 
 Some benchmarks run using Open Telemetry against a local Signoz server. To set it up run:
 
@@ -27,13 +22,14 @@ git clone https://github.com/SigNoz/signoz.git
 cd signoz/deploy
 docker-compose -f docker/clickhouse-setup/docker-compose.yaml up -d
 ```
+
 Personally, I get this error:
 
 ```
 Error response from daemon: unknown log opt 'max-file' for journald log driver
 ```
 
-To fix it, I grep for `max-file` in `signoz/deploy` all yaml blocks like, and delete them:
+To fix it, I `grep` for `max-file` in `signoz/deploy` and delete all `logging` yaml blocks:
 
 ```yaml
 logging:
@@ -42,16 +38,27 @@ logging:
     max-file: "3"
 ```
 
-Then run:
+Visit http://localhost:3301/signup and create an account. Their setup appears to
+mount and persist a sqlite file to store user name / password in their repo. So
+if you forget your password, you can just remove signoz and `sudo git clean
+-fxd` in the `signoz` repo.
+
+## Run benchmarks
 
 ```sh
-dotnet run -c Release -- --filter "*"
+dotnet run -c Release
 ```
 
 In NixOS, I had to specify the path to the dotnet executable for BenchmarkDotNet:
 
 ```sh
-dotnet run -c Release -- --filter "*" --cli /etc/profiles/per-user/will/bin/dotnet
+dotnet run -c Release -- --cli /etc/profiles/per-user/will/bin/dotnet
+```
+
+## Remove SigNoz
+
+```sh
+docker-compose -f docker/clickhouse-setup/docker-compose.yaml down
 ```
 
 ## Console Benchmarks Summary
@@ -66,16 +73,11 @@ AMD Ryzen 9 7950X, 1 CPU, 32 logical and 16 physical cores
 Toolchain=.NET 8.0
 ```
 
-### AsyncOtelInfo vs AsyncInfo
+*Legends*
 
-
-Comparing Serilog async console sink vs Serilog async Open Telemetry to local
-signoz.io
-
-| Method        | Mean     | Allocated |
-|-------------- |---------:|----------:|
-| AsyncOtelInfo | 132.3 ns |     240 B |
-| AsyncInfo     | 136.2 ns |     201 B |
+- Mean      : Arithmetic mean of all measurements
+- Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+- 1 ns      : 1 Nanosecond (0.000000001 sec)
 
 ### Logger vs Serilog vs Serilog async console
 
@@ -118,3 +120,13 @@ into the structured log.
 |------------- |---------:|----------:|
 | CodeGenPoint | 636.6 ns |   1.29 KB |
 | Point        | 647.4 ns |   1.26 KB |
+
+### AsyncOtelInfo vs AsyncConsoleInfo
+
+Comparing Serilog async console sink vs Serilog async Open Telemetry to local
+signoz.io
+
+| Method        | Mean     | Allocated |
+|-------------- |---------:|----------:|
+| AsyncOtelInfo | 132.3 ns |     240 B |
+| AsyncInfo     | 136.2 ns |     201 B |
