@@ -20,6 +20,30 @@ Benchmarks different forms of logging, including:
 
 ## Run benchmarks
 
+Some benchmarks run using Open Teleetry against a local Signoz server. To set it up run:
+
+```sh
+git clone https://github.com/SigNoz/signoz.git
+cd signoz/deploy
+docker-compose -f docker/clickhouse-setup/docker-compose.yaml up -d
+```
+Personally, I get this error:
+
+```
+Error response from daemon: unknown log opt 'max-file' for journald log driver
+```
+
+To fix it I grep for `max-file` in `signoz/deploy` all yaml blocks like:
+
+```yaml
+logging:
+  options:
+    max-size: 50m
+    max-file: "3"
+```
+
+Then run:
+
 ```sh
 dotnet run -c Release -- --filter "*"
 ```
@@ -43,6 +67,17 @@ AMD Ryzen 9 7950X, 1 CPU, 32 logical and 16 physical cores
 
 Toolchain=.NET 8.0
 ```
+
+### AsyncOtelInfo vs AsyncInfo
+
+
+Comparing Serilog async console sink vs Serilog async Open Telemetry to local
+signoz.io
+
+| Method        | Mean     | Allocated |
+|-------------- |---------:|----------:|
+| AsyncOtelInfo | 132.3 ns |     240 B |
+| AsyncInfo     | 136.2 ns |     201 B |
 
 ### Logger vs Serilog vs Serilog async console
 

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Core;
 using Serilog.Extensions.Logging;
+using Serilog.Sinks.OpenTelemetry;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace benchmark_serilog;
@@ -27,6 +28,19 @@ public static partial class Logging
 		new SerilogLoggerFactory(
 			new LoggerConfiguration().WriteTo.Async(x => x.Console()).CreateLogger())
 			.CreateLogger<SerilogAsyncConsoleInfo>();
+
+	// SeriLog. Open Telemetry logging.
+	public static readonly Logger SeriOtelLogger = new LoggerConfiguration()
+		.WriteTo.OpenTelemetry(options =>
+		{
+			options.Endpoint = "http://127.0.0.1:4317";
+			options.Protocol = OtlpProtocol.Grpc;
+			options.ResourceAttributes = new Dictionary<string, object>
+			{
+				["service.name"] = "benchmark-serilog",
+				["service.version"] = typeof(Program).Assembly.GetName().Version?.ToString() ?? "unknown"
+			};
+		}).CreateLogger();
 
 	[LoggerMessage(
 		EventId = 0,
@@ -99,6 +113,21 @@ public class SerilogAsyncConsoleInfo
 
 	[Benchmark]
 	public void Info() => Logging.SeriLoggerAsync.Information(Program.Message);
+}
+
+/// <summary>
+/// Comparing Serilog async console sink vs Serilog async Open Telemetry to local signoz.io
+/// </summary>
+[HideColumns("Error", "StdDev", "Median")]
+[MemoryDiagnoser(displayGenColumns: false)]
+[SuppressMessage("Performance", "CA1822:Mark members as static")] // benchmarks must be non-static
+public class SerilogAsyncConsoleVsOtelInfo
+{
+	[Benchmark]
+	public void AsyncOtelInfo() => Logging.SeriOtelLogger.Information(Program.Message);
+
+	[Benchmark]
+	public void AsyncInfo() => Logging.SeriLoggerAsync.Information(Program.Message);
 }
 
 /// <summary>
