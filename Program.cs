@@ -101,6 +101,10 @@ public class SerilogAsyncConsoleInfo
 	public void Info() => Logging.SeriLoggerAsync.Information(Program.Message);
 }
 
+/// <summary>
+/// Comparing getting a Point containing X / Y ints into the body of the message and into the
+/// structured log.
+/// </summary>
 [HideColumns("Error", "StdDev", "Median")]
 [MemoryDiagnoser(displayGenColumns: false)]
 [SuppressMessage("Performance", "CA1822:Mark members as static")] // benchmarks must be non-static
@@ -123,6 +127,9 @@ public class SerilogAsyncConsolePoint
 	public void Point() => SeriLoggerAsync.Information("Processed {@Point}", Program.Point);
 }
 
+/// <summary>
+/// Comparing getting 3 ints into the body of the message and into the structured log.
+/// </summary>
 [HideColumns("Error", "StdDev", "Median")]
 [MemoryDiagnoser(displayGenColumns: false)]
 [SuppressMessage("Performance", "CA1822:Mark members as static")] // benchmarks must be non-static
