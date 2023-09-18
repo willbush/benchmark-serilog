@@ -85,9 +85,9 @@ Comparing default Microsoft Logger vs Serilog vs Serilog async console.
 
 | Method       |       Mean | Allocated |
 |--------------|-----------:|----------:|
-| Default      | 6,716.0 ns |     208 B |
-| Serilog      | 3,438.1 ns |    1048 B |
-| SerilogAsync |   132.1 ns |     199 B |
+| Default      | 6,827.7 ns |     192 B |
+| Serilog      | 3,434.8 ns |    1048 B |
+| SerilogAsync |   124.4 ns |     195 B |
 
 Clearly using async `.WriteTo.Async(x => x.Console())` is a big win.
 
@@ -100,8 +100,8 @@ method on Serilog's interface.
 
 | Method      |     Mean | Allocated |
 |-------------|---------:|----------:|
-| CodeGenInfo | 394.9 ns |     916 B |
-| Info        | 128.7 ns |     193 B |
+| CodeGenInfo | 379.9 ns |     867 B |
+| Info        | 126.4 ns |     200 B |
 
 ### 3 ints
 
@@ -109,8 +109,8 @@ Comparing getting 3 ints into the body of the message and into the structured lo
 
 | Method      |     Mean | Allocated |
 |-------------|---------:|----------:|
-| CodeGenInts | 762.5 ns |    1607 B |
-| Ints        | 282.1 ns |     647 B |
+| CodeGenInts | 732.9 ns |    1514 B |
+| Ints        | 278.0 ns |     636 B |
 
 ### Point class with X / Y ints
 
@@ -119,15 +119,45 @@ into the structured log.
 
 | Method       |     Mean | Allocated |
 |--------------|---------:|----------:|
-| CodeGenPoint | 636.6 ns |   1.29 KB |
-| Point        | 647.4 ns |   1.26 KB |
+| CodeGenPoint | 660.0 ns |    1.3 KB |
+| Point        | 498.4 ns |   1.19 KB |
 
 ### AsyncOtelInfo vs AsyncConsoleInfo
 
 Comparing Serilog async console sink vs Serilog async Open Telemetry to local
 signoz.io
 
-| Method        |     Mean | Allocated |
-|---------------|---------:|----------:|
-| AsyncOtelInfo | 132.3 ns |     240 B |
-| AsyncInfo     | 136.2 ns |     201 B |
+| Method          |     Mean | Allocated |
+|-----------------|---------:|----------:|
+| AsyncSigNozInfo | 128.2 ns |     229 B |
+| AsyncInfo       | 125.7 ns |     209 B |
+
+### MicrosoftLogger vs SerilogToSigNoz
+
+Comparing Microsoft default logger to local SigNoz vs Serilog async to local SigNoz
+
+| Method                    | Mean     | Allocated |
+|-------------------------- |---------:|----------:|
+| Default_OneString         | 145.6 ns |     164 B |
+| Default_CodeGen_OneString | 227.8 ns |     277 B |
+| Serilog_OneString         | 129.2 ns |     235 B |
+| Serilog_CodeGen_OneString | 362.6 ns |    1019 B |
+| Default_3Ints             | 328.4 ns |     428 B |
+| Default_CodeGen_3Ints     | 419.3 ns |     552 B |
+| Serilog_3Ints             | 266.8 ns |     713 B |
+| Serilog_CodeGen_3Ints     | 679.8 ns |    1797 B |
+
+## NoSinkLogger vs Serilog
+
+Using no sink, compare Microsoft default logger to serilog.
+
+| Method                    |       Mean | Allocated |
+|---------------------------|-----------:|----------:|
+| Default_OneString         |  11.622 ns |         - |
+| Default_CodeGen_OneString |   1.683 ns |         - |
+| Serilog_OneString         | 105.395 ns |     144 B |
+| Serilog_CodeGen_OneString | 302.269 ns |     776 B |
+| Default_3Ints             |  35.648 ns |     120 B |
+| Default_CodeGen_3Ints     |   1.687 ns |         - |
+| Serilog_3Ints             | 215.985 ns |     544 B |
+| Serilog_CodeGen_3Ints     | 597.040 ns |    1392 B |
