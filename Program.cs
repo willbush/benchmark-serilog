@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
@@ -100,15 +101,8 @@ public class Program
 	public const string Message = "Keyboard not found. Press F1 to continue.";
 	public static readonly Point Point = new() { X = 1, Y = 2 };
 
-	// static void Main(string[] args)
-	// 	=> BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
-
-	static void Main()
-	{
-		Logging.DefaultSigNozLogger.LogInts("DefaultSigNozLogger ", 1, 2, 3);
-		Logging.SeriSigNozLogger.Information("SeriSigNozLogger {@0} {@1} {@2}", 1, 2, 3);
-		Logging.SeriSigNozILogger.LogInts("SeriSigNozILogger", 1, 2, 3);
-	}
+	static void Main(string[] args)
+		=> BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
 }
 
 /// <summary>
