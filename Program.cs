@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using Serilog;
 using Serilog.Core;
@@ -14,8 +14,8 @@ namespace benchmark_serilog;
 public static partial class Logging
 {
 	// Default. Console logging.
-	public static readonly ILogger<LogInfoOnConsole> Logger =
-		LoggerFactory.Create(b => b.AddConsole()).CreateLogger<LogInfoOnConsole>();
+	public static readonly ILogger<Program> Logger =
+		LoggerFactory.Create(b => b.AddConsole()).CreateLogger<Program>();
 
 	// SeriLog. Console logging.
 	public static readonly Logger SeriLogger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
@@ -25,10 +25,10 @@ public static partial class Logging
 		new LoggerConfiguration().WriteTo.Async(x => x.Console()).CreateLogger();
 
 	// SeriLog Logger with async console sink.
-	public static readonly ILogger<SerilogAsyncConsoleInfo> SeriDefaultLoggerAsync =
+	public static readonly ILogger<Program> SeriDefaultLoggerAsync =
 		new SerilogLoggerFactory(
 			new LoggerConfiguration().WriteTo.Async(x => x.Console()).CreateLogger())
-			.CreateLogger<SerilogAsyncConsoleInfo>();
+			.CreateLogger<Program>();
 
 	// SeriLog. Open Telemetry logging.
 	public static readonly Logger SeriSigNozLogger = new LoggerConfiguration()
@@ -36,12 +36,34 @@ public static partial class Logging
 		{
 			options.Endpoint = "http://127.0.0.1:4317";
 			options.Protocol = OtlpProtocol.Grpc;
-			options.ResourceAttributes = new Dictionary<string, object>
-			{
-				["service.name"] = "benchmark-serilog",
-				["service.version"] = typeof(Program).Assembly.GetName().Version?.ToString() ?? "unknown"
-			};
+			options.ResourceAttributes = new Dictionary<string, object> { ["service.name"] = "benchmark-SeriSigNozLogger" };
 		}).CreateLogger();
+
+	public static readonly ILogger<Program> SeriSigNozILogger =
+		new SerilogLoggerFactory(
+			new LoggerConfiguration()
+				.WriteTo.OpenTelemetry(options =>
+				{
+					options.Endpoint = "http://127.0.0.1:4317";
+					options.Protocol = OtlpProtocol.Grpc;
+					options.ResourceAttributes = new Dictionary<string, object> { ["service.name"] = "benchmark-SeriSigNozILogger" };
+				}).CreateLogger())
+			.CreateLogger<Program>();
+
+	public static readonly ILogger DefaultSigNozLogger = LoggerFactory.Create(builder =>
+	{
+		builder.AddOpenTelemetry(options =>
+		{
+			options.IncludeScopes = false;
+			options.ParseStateValues = true;
+			options.IncludeFormattedMessage = true;
+			options.AddOtlpExporter(otlpOptions =>
+			{
+				otlpOptions.Endpoint = new Uri("http://localhost:4317");
+				otlpOptions.Protocol = OtlpExportProtocol.Grpc;
+			});
+		});
+	}).CreateLogger<Program>();
 
 	[LoggerMessage(
 		EventId = 0,
@@ -61,6 +83,7 @@ public static partial class Logging
 		Message = "{message} {x} {y} {z}")]
 	public static partial void LogInts(this ILogger logger, string message, int x, int y, int z);
 }
+
 public class Point
 {
 	public int X { get; init; }
@@ -77,8 +100,15 @@ public class Program
 	public const string Message = "Keyboard not found. Press F1 to continue.";
 	public static readonly Point Point = new() { X = 1, Y = 2 };
 
-	static void Main(string[] args)
-		=> BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+	// static void Main(string[] args)
+	// 	=> BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+
+	static void Main()
+	{
+		Logging.DefaultSigNozLogger.LogInts("DefaultSigNozLogger ", 1, 2, 3);
+		Logging.SeriSigNozLogger.Information("SeriSigNozLogger {@0} {@1} {@2}", 1, 2, 3);
+		Logging.SeriSigNozILogger.LogInts("SeriSigNozILogger", 1, 2, 3);
+	}
 }
 
 /// <summary>
@@ -170,26 +200,73 @@ public class SerilogAsyncConsoleVsSerilogToSigNoz
 [SuppressMessage("Performance", "CA1822:Mark members as static")] // benchmarks must be non-static
 public class MicrosoftLoggerVsSerilogToSigNoz
 {
-	static readonly ILogger Logger = LoggerFactory.Create(builder =>
-	{
-		builder.AddOpenTelemetry(options =>
-		{
-			options.IncludeScopes = false;
-			options.ParseStateValues = true;
-			options.IncludeFormattedMessage = true;
-			options.AddOtlpExporter(otlpOptions =>
-			{
-				otlpOptions.Endpoint = new Uri("http://localhost:4317");
-			});
-		});
-	}).CreateLogger<MicrosoftLoggerVsSerilogToSigNoz>();
-	
 	[Benchmark]
-	public void DefaultLogInformation() => Logger.LogInformation(Program.Message);
+	public void Default_OneString() => Logging.DefaultSigNozLogger.LogInformation(Program.Message);
 
 	[Benchmark]
-	public void CodeGenDefaultInfo() => Logger.Info(Program.Message);
+	public void Default_CodeGen_OneString() => Logging.DefaultSigNozLogger.Info(Program.Message);
 
 	[Benchmark]
-	public void AsyncInformation() => Logging.SeriSigNozLogger.Information(Program.Message);
+	public void Serilog_OneString() => Logging.SeriSigNozLogger.Information(Program.Message);
+
+	[Benchmark]
+	public void Serilog_CodeGen_OneString() => Logging.SeriSigNozILogger.Info(Program.Message);
+
+	[Benchmark]
+	public void Default_3Ints() => Logging.DefaultSigNozLogger.LogInformation("Test {} {} {}", 1, 2, 3);
+
+	[Benchmark]
+	public void Default_CodeGen_3Ints() => Logging.DefaultSigNozLogger.LogInts("Test ", 1, 2, 3);
+
+	[Benchmark]
+	public void Serilog_3Ints() => Logging.SeriSigNozLogger.Information("Test {@0} {@1} {@2}", 1, 2, 3);
+
+	[Benchmark]
+	public void Serilog_CodeGen_3Ints() => Logging.SeriSigNozILogger.LogInts("Test ", 1, 2, 3);
+}
+
+/// <summary>
+/// Using no sink, compare Microsoft default logger to serilog.
+/// </summary>
+[HideColumns("Error", "StdDev", "Median")]
+[MemoryDiagnoser(displayGenColumns: false)]
+[SuppressMessage("Performance", "CA1822:Mark members as static")] // benchmarks must be non-static
+public class NoSinkLoggerVsSerilog
+{
+	// Default. No sink.
+	static readonly ILogger<Program> Logger =
+		LoggerFactory.Create(_ => { }).CreateLogger<Program>();
+
+	// SeriLog. No sink.
+	static readonly Logger SeriLogger = new LoggerConfiguration().CreateLogger();
+
+	// SeriLog via ILogger. No sink.
+	static readonly ILogger<Program> SeriILogger =
+		new SerilogLoggerFactory(
+			new LoggerConfiguration().CreateLogger())
+			.CreateLogger<Program>();
+
+	[Benchmark]
+	public void Default_OneString() => Logger.LogInformation(Program.Message);
+
+	[Benchmark]
+	public void Default_CodeGen_OneString() => Logger.Info(Program.Message);
+
+	[Benchmark]
+	public void Serilog_OneString() => SeriLogger.Information(Program.Message);
+
+	[Benchmark]
+	public void Serilog_CodeGen_OneString() => SeriILogger.Info(Program.Message);
+
+	[Benchmark]
+	public void Default_3Ints() => Logger.LogInformation("Test {} {} {}", 1, 2, 3);
+
+	[Benchmark]
+	public void Default_CodeGen_3Ints() => Logger.LogInts("Test ", 1, 2, 3);
+
+	[Benchmark]
+	public void Serilog_3Ints() => SeriLogger.Information("Test {@0} {@1} {@2}", 1, 2, 3);
+
+	[Benchmark]
+	public void Serilog_CodeGen_3Ints() => SeriILogger.LogInts("Test ", 1, 2, 3);
 }
